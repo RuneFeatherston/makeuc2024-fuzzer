@@ -11,3 +11,5 @@ COPY vsftpd.conf /etc/vsftpd.conf
 EXPOSE 21
 
 CMD ["vsftpd", "/etc/vsftpd.conf"]
+
+# testing

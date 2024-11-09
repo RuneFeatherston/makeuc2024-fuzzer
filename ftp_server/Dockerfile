@@ -1,5 +1,5 @@
 # ftp_server/Dockerfile
-FROM debian:slim
+FROM docker.io/debian:bullseye-slim
 
 RUN apt-get update && apt-get install -y \
     vsftpd && \

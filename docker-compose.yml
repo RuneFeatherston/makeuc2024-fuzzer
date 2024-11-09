@@ -1,0 +1,30 @@
+services:
+  master:
+    build:
+      context: ./master
+    container_name: master
+    depends_on:
+      - http_server
+      - ftp_server
+    networks:
+      - fuzzing_net
+    volumes:
+      - ./master/logs:/app/logs  # Mount logs for easy access
+
+  http_server:
+    build:
+      context: ./http_server
+    container_name: http_server
+    networks:
+      - fuzzing_net
+
+  ftp_server:
+    build:
+      context: ./ftp_server
+    container_name: ftp_server
+    networks:
+      - fuzzing_net
+
+networks:
+  fuzzing_net:
+    driver: bridge

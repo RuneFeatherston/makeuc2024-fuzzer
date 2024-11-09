@@ -1,5 +1,7 @@
 import logging
+import random
 from scapy.all import IP, TCP, send
+from scapy.layers.inet import RandInt, RandShort
 import socket
 import sys
 
@@ -40,18 +42,42 @@ TARGET_PORTS = {
     "ftp_server": 21    # FTP port
 }
 
-# Fuzzing functions
+# Function to create a mutated packet with random fields
+def create_mutated_packet(dst_ip, dst_port):
+    packet = IP(dst=dst_ip) / TCP(dport=dst_port, flags="S")
+
+    # Mutate TTL
+    if random.choice([True, False]):
+        packet[IP].ttl = random.randint(1, 255)
+
+    # Mutate TCP flags
+    if random.choice([True, False]):
+        packet[TCP].flags = random.choice(["S", "A", "F", "P", "R", "U"])
+
+    # Mutate TCP sequence number
+    if random.choice([True, False]):
+        packet[TCP].seq = RandInt()
+
+    # Mutate source port
+    if random.choice([True, False]):
+        packet[TCP].sport = RandShort()
+
+    return packet
+
+# Fuzzing functions with mutation
 def fuzz_http_server():
     if TARGET_IPS["http_server"]:
-        packet = IP(dst=TARGET_IPS["http_server"]) / TCP(dport=TARGET_PORTS["http_server"], flags="S")
-        send(packet)
-        logging.info(f"Sent SYN packet to HTTP server at {TARGET_IPS['http_server']}:{TARGET_PORTS['http_server']}")
+        mutated_packet = create_mutated_packet(TARGET_IPS["http_server"], TARGET_PORTS["http_server"])
+        send(mutated_packet)
+        packet_id = id(mutated_packet)
+        logging.info(f"Packet ID {packet_id}: Sent mutated packet to HTTP server with TTL={mutated_packet[IP].ttl}, TCP Flags={mutated_packet[TCP].flags}, TCP Seq={mutated_packet[TCP].seq}, Source Port={mutated_packet[TCP].sport}")
 
 def fuzz_ftp_server():
     if TARGET_IPS["ftp_server"]:
-        packet = IP(dst=TARGET_IPS["ftp_server"]) / TCP(dport=TARGET_PORTS["ftp_server"], flags="S")
-        send(packet)
-        logging.info(f"Sent SYN packet to FTP server at {TARGET_IPS['ftp_server']}:{TARGET_PORTS['ftp_server']}")
+        mutated_packet = create_mutated_packet(TARGET_IPS["ftp_server"], TARGET_PORTS["ftp_server"])
+        send(mutated_packet)
+        packet_id = id(mutated_packet)
+        logging.info(f"Packet ID {packet_id}: Sent mutated packet to FTP server with TTL={mutated_packet[IP].ttl}, TCP Flags={mutated_packet[TCP].flags}, TCP Seq={mutated_packet[TCP].seq}, Source Port={mutated_packet[TCP].sport}")
 
 # Run fuzzing functions
 fuzz_http_server()

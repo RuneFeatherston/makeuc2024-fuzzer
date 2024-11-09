@@ -3,3 +3,37 @@
 2024-11-09 18:24:48,185 - Resolved ftp_server to 172.18.0.3
 2024-11-09 18:24:48,379 - Sent SYN packet to HTTP server at 172.18.0.2:80
 2024-11-09 18:24:48,620 - Sent SYN packet to FTP server at 172.18.0.3:21
+2024-11-09 19:42:54,044 - Resolved http_server to 172.18.0.3
+2024-11-09 19:42:54,044 - Resolved ftp_server to 172.18.0.2
+2024-11-09 19:42:54,242 - Sent SYN packet to HTTP server at 172.18.0.3:80
+2024-11-09 19:42:54,401 - Sent SYN packet to FTP server at 172.18.0.2:21
+2024-11-09 21:53:54,239 - Resolved http_server to 172.18.0.3
+2024-11-09 21:53:54,241 - Resolved ftp_server to 172.18.0.2
+2024-11-09 21:53:54,407 - Sent SYN packet to HTTP server at 172.18.0.3:80
+2024-11-09 21:53:54,577 - Sent SYN packet to FTP server at 172.18.0.2:21
+2024-11-09 21:57:58,206 - Resolved http_server to 172.18.0.3
+2024-11-09 21:57:58,207 - Resolved ftp_server to 172.18.0.2
+2024-11-09 21:57:58,388 - Sent SYN packet to HTTP server at 172.18.0.3:80
+2024-11-09 21:57:58,548 - Sent SYN packet to FTP server at 172.18.0.2:21
+2024-11-09 22:01:24,079 - Resolved http_server to 172.18.0.3
+2024-11-09 22:01:24,080 - Resolved ftp_server to 172.18.0.2
+2024-11-09 22:01:24,273 - Sent SYN packet to HTTP server at 172.18.0.3:80
+2024-11-09 22:01:24,453 - Sent SYN packet to FTP server at 172.18.0.2:21
+2024-11-09 22:03:54,373 - Resolved http_server to 172.18.0.3
+2024-11-09 22:03:54,373 - Resolved ftp_server to 172.18.0.2
+2024-11-09 22:03:54,583 - Sent SYN packet to HTTP server at 172.18.0.3:80
+2024-11-09 22:03:54,733 - Sent SYN packet to FTP server at 172.18.0.2:21
+2024-11-09 22:16:46,448 - Resolved http_server to 172.18.0.2
+2024-11-09 22:16:46,449 - Resolved ftp_server to 172.18.0.3
+2024-11-09 22:23:02,975 - Resolved http_server to 172.18.0.2
+2024-11-09 22:23:02,976 - Resolved ftp_server to 172.18.0.3
+2024-11-09 22:24:31,520 - Resolved http_server to 172.18.0.3
+2024-11-09 22:24:31,520 - Resolved ftp_server to 172.18.0.2
+2024-11-09 22:27:00,086 - Resolved http_server to 172.18.0.2
+2024-11-09 22:27:00,087 - Resolved ftp_server to 172.18.0.3
+2024-11-09 22:29:21,919 - Resolved http_server to 172.18.0.2
+2024-11-09 22:29:21,920 - Resolved ftp_server to 172.18.0.3
+2024-11-09 22:33:09,603 - Resolved http_server to 172.18.0.2
+2024-11-09 22:33:09,604 - Resolved ftp_server to 172.18.0.3
+2024-11-09 22:33:09,825 - Packet ID 140581486654288: Sent mutated packet to HTTP server with TTL=64, TCP Flags=U, TCP Seq=0, Source Port=20
+2024-11-09 22:33:10,005 - Packet ID 140581485120512: Sent mutated packet to FTP server with TTL=76, TCP Flags=P, TCP Seq=1939863686, Source Port=20

@@ -14,7 +14,7 @@ This project is a bitstream-level fuzzer designed to identify vulnerabilities wi
 First, clone the project repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/bitstream-fuzzer.git
+git clone https://github.com/RuneFeatherston/makeuc2024-fuzzer.git
 cd bitstream-fuzzer
 ```
 
@@ -43,8 +43,8 @@ You can configure various parameters for the fuzzer in the `docker-compose.yml` 
 
 ### Project Structure
 - **fuzzer/** - Contains the core fuzzer code and mutation functions
-- **docker-compose.yml** - Docker COmpose file that defines services, networks, and volumes
+- **docker-compose.yml** - Docker Compose file that defines services, networks, and volumes
 - **http_server/** - Directory with the code for the HTTP server and crash logging logic
 
 ### Troubleshooting
-- Sometimes, fuzzing can be constrained by the memory overwrite systems within the server hosting the HTTP server. You may need to investigate memory segmentation within the gcc compilation process to prevent the server from being spread across the container's memory-space.
+Sometimes, fuzzing can be constrained by the memory overwrite systems within the server hosting the HTTP server. You may need to investigate memory segmentation within the gcc compilation process to prevent the server from being spread across the container's memory-space.

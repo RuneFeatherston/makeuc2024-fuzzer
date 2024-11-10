@@ -1,6 +1,7 @@
 import string
 from base64 import b64encode
-from random import choice, randint, urandom
+from random import choice, randint
+from os import urandom
 
 ALLOWED_CHARS = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
@@ -49,11 +50,12 @@ def generate_random_strings(count):
         urandom_bytes = urandom((desired_length + 1) * 3 // 4)
         candidate = b64encode(urandom_bytes, b'//').upper()[:desired_length]
 
-        # Replace any '/' characters with a random character
+        # Replace any '/' characters with a random character (now byte encoded)
         while b'/' in candidate:
-            candidate = candidate.replace(b'/', choice(ALLOWED_CHARS), 1)
+            candidate = candidate.replace(b'/', choice(ALLOWED_CHARS).encode(), 1)
 
         # Add the generated string to the set if it's not already there
         if candidate not in generated:
             generated.add(candidate)
             yield candidate.decode()
+

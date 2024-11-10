@@ -22,17 +22,30 @@ void process_request(int client_sock) {
     // Null-terminate the string
     buffer[bytes_received] = '\0';
 
-    // Vulnerable response processing: buffer overflow vulnerability here
-    // This is a buffer overflow vulnerability.  If the request contains
-    // more than MAX_REQUEST_SIZE bytes, it will overflow the buffer.
+    // Debug: Print request details
     printf("Request received: %s\n", buffer);
+    printf("Bytes received: %d\n", bytes_received);
 
-    // If the request contains "GET /evil" in it, it causes a stack overflow
+    // Check if the request exceeds buffer size
+    if (bytes_received > MAX_REQUEST_SIZE) {
+        printf("Warning: Request exceeds MAX_REQUEST_SIZE! Bytes received: %d\n", bytes_received);
+    }
+
+    // Print buffer content for debugging
+    printf("Buffer content: %s\n", buffer);
+
+    // Check if the request contains "GET /evil" to trigger buffer overflow
     if (strstr(buffer, "GET /evil") != NULL) {
         printf("Triggering buffer overflow...\n");
-        char evil_data[1000];
+        
+        // Directly overflow the stack with more data
+        char evil_data[2000];
         memset(evil_data, 'A', sizeof(evil_data));  // This will overflow the stack
-        evil_data[999] = '\0';
+        evil_data[1999] = '\0';  // Null-terminate to avoid undefined behavior
+        printf("Evil data filled with 'A's: %s\n", evil_data);
+        
+        // Force the server to crash by accessing invalid memory or doing something dangerous
+        *(volatile int *)0 = 0;  // Dereference a null pointer to cause a crash
     }
 
     // Send a simple HTTP response

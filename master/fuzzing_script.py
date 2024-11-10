@@ -1,13 +1,22 @@
 import logging
 from scapy.all import IP, TCP, send
+import docker
+import time
+import random
 import socket
-import sys
+from evolve import init_pop, fitness, crossover, mutate
+from utils import levenshtein_distance
 
-# Setup logging
-logging.basicConfig(filename='/app/logs/fuzzing.log', level=logging.INFO, format='%(asctime)s - %(message)s')
+
+# Initialize Docker client
+client = docker.from_env()
+TARGET_CONTAINER_NAME = "http_server"
+
+# Set up logging for monitoring
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 
 # Function to resolve service names to IPs
-def resolve_ip(service_name):
+def resolve_ip(service_name: str) -> str:
     """
     Args:
         service_name (str): The DNS name of the service to resolve.
@@ -24,35 +33,80 @@ def resolve_ip(service_name):
         logging.error(f"Error resolving {service_name}: {err}")
         return None
 
-# Target server information (using resolved IPs)
-TARGET_IPS = {
-    "http_server": resolve_ip("http_server"),  # Resolve DNS name to IP
-    "ftp_server": resolve_ip("ftp_server")    # Resolve DNS name to IP
-}
+def check_container():
+    """Monitors Docker events and logs crashes for the target container."""
+    try:
+        logging.info("Checking Docker events once...")
+        # Get the most recent Docker event related to the 'die' event
+        event = next(client.events(decode=True, filters={'event': 'die'}), None)
 
-# Check if both IPs were successfully resolved
-if not TARGET_IPS["http_server"] or not TARGET_IPS["ftp_server"]:
-    logging.error("One or more server IPs could not be resolved. Exiting script.")
-    sys.exit(1)  # Exit the script if IP resolution fails
+        if event:
+            # Check if the event is a container crash
+            container_name = event['Actor']['Attributes'].get('name')
 
-TARGET_PORTS = {
-    "http_server": 80,  # HTTP port
-    "ftp_server": 21    # FTP port
-}
+            # If this is the target container, log the crash
+            if container_name == TARGET_CONTAINER_NAME:
+                crash_time = time.strftime("%Y-%m-%d %H:%M:%S")
+                logging.info(f"{crash_time} - Container {container_name} crashed.")
+                return True  # Indicate a crash for the genetic algorithm loop
+            else:
+                logging.info(f"Received 'die' event for container {container_name}, but not target container.")
+                return False
+        else:
+            logging.info("No Docker events found.")
+            return False
+    except docker.DockerException as e:
+        logging.error(f"Error while monitoring Docker events: {str(e)}")
+        return False
 
-# Fuzzing functions
-def fuzz_http_server():
-    if TARGET_IPS["http_server"]:
-        packet = IP(dst=TARGET_IPS["http_server"]) / TCP(dport=TARGET_PORTS["http_server"], flags="S")
+# Initialize population
+logging.info("Initializing population...")
+population = init_pop(pop_size=20)
+logging.info(f"Population initialized with {len(population)} individuals.")
+
+while True:
+    # Evaluate fitness of population
+    logging.info("Evaluating fitness of population...")
+    fit_results = fitness(population)
+    max_distance_payload = fit_results["max_distance_payload"]
+    min_distance_payload = fit_results["min_distance_payload"]
+
+    # Log fitness results
+    logging.info(f"Max distance payload: {max_distance_payload}")
+    logging.info(f"Min distance payload: {min_distance_payload}")
+
+    parents = [max_distance_payload, min_distance_payload]
+
+    # Crossover to create new population
+    logging.info("Performing crossover to generate new population...")
+    new_population = []
+    for _ in range(len(population) // 2):
+        father, mother = random.sample(parents, 2)
+        new_population.extend(crossover(father, mother))
+
+    # Mutate the new population
+    logging.info("Performing mutation on new population...")
+    mutated_population = [mutate(payload) for payload in new_population]
+
+    # Send mutated payloads and check for server crash
+    for payload in mutated_population:
+        logging.info(f"Preparing to send payload: {payload}")
+
+        # Resolve IP of the target server
+        server_ip = resolve_ip("http_server")
+        if not server_ip:
+            logging.error("Unable to resolve target server IP. Skipping payload.")
+            continue
+
+        # Prepare packet
+        packet = IP(dst=server_ip) / TCP(dport=8080) / payload
+
+        # Send the packet
+        logging.info(f"Sending packet with payload: {payload}")
         send(packet)
-        logging.info(f"Sent SYN packet to HTTP server at {TARGET_IPS['http_server']}:{TARGET_PORTS['http_server']}")
 
-def fuzz_ftp_server():
-    if TARGET_IPS["ftp_server"]:
-        packet = IP(dst=TARGET_IPS["ftp_server"]) / TCP(dport=TARGET_PORTS["ftp_server"], flags="S")
-        send(packet)
-        logging.info(f"Sent SYN packet to FTP server at {TARGET_IPS['ftp_server']}:{TARGET_PORTS['ftp_server']}")
-
-# Run fuzzing functions
-fuzz_http_server()
-fuzz_ftp_server()
+        # Check if the server crashed
+        if check_container():
+            logging.error(f"Server crashed with payload: {payload}")
+            print(f"Payload that caused crash: {payload}")
+            break  # End the loop if a crash is detected

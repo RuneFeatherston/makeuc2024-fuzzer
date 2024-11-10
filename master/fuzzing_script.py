@@ -58,9 +58,11 @@ def create_mutated_packet(dst_ip, dst_port):
     if random.choice([True, False]):
         packet[TCP].seq = RandInt()
 
-    # Mutate source port
-    if random.choice([True, False]):
-        packet[TCP].sport = RandShort()
+
+
+    # Mutate payload size - random size between 0 and 1500 bytes
+    payload_size = random.randint(0, 1500)  # Random size between 0 and 1500 bytes
+    packet.add_payload(bytes(random.getrandbits(8) for _ in range(payload_size)))  # Generate a random payload
 
     return packet
 
@@ -70,14 +72,20 @@ def fuzz_http_server():
         mutated_packet = create_mutated_packet(TARGET_IPS["http_server"], TARGET_PORTS["http_server"])
         send(mutated_packet)
         packet_id = id(mutated_packet)
-        logging.info(f"Packet ID {packet_id}: Sent mutated packet to HTTP server with TTL={mutated_packet[IP].ttl}, TCP Flags={mutated_packet[TCP].flags}, TCP Seq={mutated_packet[TCP].seq}, Source Port={mutated_packet[TCP].sport}")
+        payload_size = len(mutated_packet.payload)  # Directly get the payload size from the packet
+        logging.info(f"Packet ID {packet_id}: Sent mutated packet to HTTP server with TTL={mutated_packet[IP].ttl}, "
+                     f"TCP Flags={mutated_packet[TCP].flags}, TCP Seq={mutated_packet[TCP].seq}, "
+                     f"Source Port={mutated_packet[TCP].sport}, Payload Size={payload_size} bytes")
 
 def fuzz_ftp_server():
     if TARGET_IPS["ftp_server"]:
         mutated_packet = create_mutated_packet(TARGET_IPS["ftp_server"], TARGET_PORTS["ftp_server"])
         send(mutated_packet)
         packet_id = id(mutated_packet)
-        logging.info(f"Packet ID {packet_id}: Sent mutated packet to FTP server with TTL={mutated_packet[IP].ttl}, TCP Flags={mutated_packet[TCP].flags}, TCP Seq={mutated_packet[TCP].seq}, Source Port={mutated_packet[TCP].sport}")
+        payload_size = len(mutated_packet.payload)  # Directly get the payload size from the packet
+        logging.info(f"Packet ID {packet_id}: Sent mutated packet to FTP server with TTL={mutated_packet[IP].ttl}, "
+                     f"TCP Flags={mutated_packet[TCP].flags}, TCP Seq={mutated_packet[TCP].seq}, "
+                     f"Source Port={mutated_packet[TCP].sport}, Payload Size={payload_size} bytes")
 
 # Run fuzzing functions
 fuzz_http_server()

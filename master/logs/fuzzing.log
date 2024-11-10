@@ -37,3 +37,7 @@
 2024-11-09 22:33:09,604 - Resolved ftp_server to 172.18.0.3
 2024-11-09 22:33:09,825 - Packet ID 140581486654288: Sent mutated packet to HTTP server with TTL=64, TCP Flags=U, TCP Seq=0, Source Port=20
 2024-11-09 22:33:10,005 - Packet ID 140581485120512: Sent mutated packet to FTP server with TTL=76, TCP Flags=P, TCP Seq=1939863686, Source Port=20
+2024-11-10 01:01:53,963 - Resolved http_server to 172.18.0.2
+2024-11-10 01:01:53,964 - Resolved ftp_server to 172.18.0.3
+2024-11-10 01:01:54,159 - Packet ID 140513651798864: Sent mutated packet to HTTP server with TTL=64, TCP Flags=P, TCP Seq=0, Source Port=23855
+2024-11-10 01:01:54,359 - Packet ID 140513650248704: Sent mutated packet to FTP server with TTL=168, TCP Flags=U, TCP Seq=0, Source Port=62512

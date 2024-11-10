@@ -1,9 +1,0 @@
-2024-11-09 17:10:23,917 - Sent SYN packet to HTTP server at http_server:80
-2024-11-09 18:24:48,185 - Resolved http_server to 172.18.0.2
-2024-11-09 18:24:48,185 - Resolved ftp_server to 172.18.0.3
-2024-11-09 18:24:48,379 - Sent SYN packet to HTTP server at 172.18.0.2:80
-2024-11-09 18:24:48,620 - Sent SYN packet to FTP server at 172.18.0.3:21
-2024-11-09 21:49:51,980 - Resolved http_server to 172.18.0.2
-2024-11-09 21:49:51,981 - Resolved ftp_server to 172.18.0.3
-2024-11-09 21:49:52,143 - Sent SYN packet to HTTP server at 172.18.0.2:80
-2024-11-09 21:49:52,343 - Sent SYN packet to FTP server at 172.18.0.3:21

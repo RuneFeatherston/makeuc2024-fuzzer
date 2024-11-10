@@ -21,13 +21,6 @@ services:
     volumes:
       - ./http_server/nginx.conf:/etc/nginx/nginx.conf  # Mount NGINX config file
 
-  ftp_server:
-    build:
-      context: ./ftp_server
-    container_name: ftp_server
-    networks:
-      - fuzzing_net
-
 networks:
   fuzzing_net:
     driver: bridge

@@ -1,23 +1,24 @@
-# Use the official NGINX image as a base
-FROM nginx:latest
+# Start with a minimal base image that has a compiler
+FROM debian:latest
 
-# Set the working directory
-WORKDIR /etc/nginx
+# Update the package manager and install necessary packages
+RUN apt-get update && apt-get install -y \
+    gcc \
+    make \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy your custom NGINX configuration
-# Make sure this file contains logging setup
-COPY nginx.conf /etc/nginx/nginx.conf
+# Set the working directory inside the container
+WORKDIR /app
 
-# Create necessary directories for logs
-RUN mkdir -p /var/log/nginx
+# Copy the vulnerable HTTP server source code into the container
+COPY vuln_http_server.c .
 
-# Expose port 80 for HTTP traffic
-EXPOSE 80
+# Compile the C source code to create the server executable
+RUN gcc -o vuln_http_server vuln_http_server.c
 
-# Ensure that error logs are written to stdout
-# Modify NGINX's default behavior for logging
-RUN ln -sf /dev/stdout /var/log/nginx/access.log
-RUN ln -sf /dev/stderr /var/log/nginx/error.log
+# Expose the server's port (e.g., 8080) to the Docker host
+EXPOSE 8080
 
-# Start NGINX in the foreground (this is important for Docker containers)
-CMD ["nginx", "-g", "daemon off;"]
+# Start the vulnerable HTTP server when the container runs
+CMD ["./vuln_http_server"]

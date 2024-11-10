@@ -1,13 +1,23 @@
-# http_server/Dockerfile
-FROM debian:bullseye-slim
+# Use the official NGINX image as a base
+FROM nginx:latest
 
-# Install Python to run a simple HTTP server
-RUN apt-get update && apt-get install -y \
-    python3 \
-    && rm -rf /var/lib/apt/lists/*
+# Set the working directory
+WORKDIR /etc/nginx
 
-# Set up working directory
-WORKDIR /app
+# Copy your custom NGINX configuration
+# Make sure this file contains logging setup
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Start a simple HTTP server on port 80
-CMD ["python3", "-m", "http.server", "80"]
+# Create necessary directories for logs
+RUN mkdir -p /var/log/nginx
+
+# Expose port 80 for HTTP traffic
+EXPOSE 80
+
+# Ensure that error logs are written to stdout
+# Modify NGINX's default behavior for logging
+RUN ln -sf /dev/stdout /var/log/nginx/access.log
+RUN ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Start NGINX in the foreground (this is important for Docker containers)
+CMD ["nginx", "-g", "daemon off;"]

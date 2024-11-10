@@ -26,4 +26,4 @@ RUN /app/venv/bin/pip install -r /app/requirements.txt
 RUN mkdir -p /app/logs
 
 # Set the virtual environment path for running the Python script
-CMD ["/app/venv/bin/python", "/app/fuzzing_script.py"]
+CMD ["/app/venv/bin/python", "/app/monitor.py"]
